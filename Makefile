@@ -11,5 +11,7 @@ circles.tex: circles.ml
 
 circles.pdf: circles.tex
 	latex circles.tex
+	bibtex circles
+	latex circles
 	dvips circles
 	ps2pdf circles.ps
