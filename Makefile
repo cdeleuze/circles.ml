@@ -1,5 +1,5 @@
 circles.tex: circles.ml
-	ocamlweb --latex-option novisiblespaces --noindex --header -s  circles.ml -o circles.tex
+	ocamlweb --encoding latin1 --latex-option novisiblespaces --noindex --header -s  circles.ml -o circles.tex
 	cat circles.tex | \
 	sed -e 's/\*\./\\times\\negthickspace.\\;/g' \
 	    -e 's/+\./+\\negthickspace.\\;/g'  \
