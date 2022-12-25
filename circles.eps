@@ -1,0 +1,359 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: -100 -100 100 100
+
+% draw a circle at position and radius with given scaled centered text
+
+/textincircle { % x y r t
+    /t exch def
+    /r exch def
+    /y exch def
+    /x exch def
+
+    gsave
+
+    % compute text size
+    newpath 0 0 moveto
+    t true charpath flattenpath pathbbox
+    2 index sub /height exch def
+    2 index sub /width exch def
+    pop pop
+
+    % BUG? pathbbox is false for strings with odd numbers of chars
+    t stringwidth pop /width exch def
+        % draw circle
+    x y translate
+    newpath 0 0 r 0 360 arc stroke
+
+    % fix text scale
+    height width atan cos r mul 2 mul width div dup scale
+
+    % draw centered text
+    width 2 div neg height 2 div neg moveto t show
+
+    grestore
+} def
+
+
+/c { % x y r c
+
+    (mystring) cvs textincircle
+
+} def
+
+
+/Helvetica-Bold findfont 1 scalefont setfont
+
+/draw_circle { % [x y] c 
+    2 dict begin
+    /c exch def
+    /z exch def
+
+    z real z imag 1 c div
+    c 1000 mul cvi (mystring) cvs textincircle
+    end
+} def
+
+/solve_real {
+    5 dict begin
+    /g exch def
+    /f exch def
+    /e exch def
+
+    /delta e f mul e g mul f g mul add add 16 mul def
+    /sqd  delta sqrt def
+
+    e f g add add 2 mul sqd sub 2 div
+    e f g add add 2 mul sqd add 2 div
+    end
+} def
+
+% arithmetic operations on complex numbers
+% complex is an 2 elements array of numbers [ r i ] 
+
+/real { 0 get } def
+/imag { 1 get } def
+
+/cnorm {
+    1 dict begin
+    /z exch def
+
+    z real dup mul z imag dup mul add sqrt
+    end
+} def
+
+/myatan {
+    dup abs 2 index abs add 0 eq
+    { pop pop 0 }
+    { atan }
+    ifelse
+} def
+
+/carg { dup imag exch real myatan } def
+
+/cadd {
+    2 dict begin
+    /z2 exch def
+    /z1 exch def
+
+    [ z1 real z2 real add
+      z1 imag z2 imag add ]
+    end
+} def
+
+/csub {
+    2 dict begin
+    /z2 exch def
+    /z1 exch def
+
+    [ z1 real z2 real sub
+      z1 imag z2 imag sub ]
+    end
+} def
+
+/cmul {
+    2 dict begin
+    /z2 exch def
+    /z1 exch def
+
+    [ z1 real z2 real mul z1 imag z2 imag mul sub
+      z1 real z2 imag mul z1 imag z2 real mul add ]
+    end
+} def
+
+/cdiv {
+    4 dict begin
+    /z2 exch def
+    /z1 exch def
+    /rho z1 cnorm z2 cnorm div def
+    /th  z1 carg z2 carg sub def
+    
+    [ rho th cos mul   rho th sin mul ]
+    end
+} def
+
+/csqrt {
+    2 dict begin
+    dup
+    /rho exch cnorm sqrt def
+    /th  exch carg 2 div def
+
+    [ rho th cos mul    rho th sin mul ]
+    end
+} def
+
+/cdivr {
+    2 dict begin
+    /x exch def
+    /z exch def
+
+    [ z real x div
+      z imag x div ]
+    end
+} def
+
+/cmulr {
+    2 dict begin
+    /x exch def
+    /z exch def
+
+    [ z real x mul
+      z imag x mul ]
+    end
+} def
+
+/solve_complex {
+    7 dict begin
+    /g exch def
+    /f exch def
+    /e exch def
+    /c16 [ 16 0 ] def
+    /c2  [  2 0 ] def
+
+    /delta e f cmul e g cmul f g cmul cadd cadd c16 cmul def
+    /sqd   delta csqrt def
+
+    e f g cadd cadd c2 cmul sqd csub c2 cdiv
+    e f g cadd cadd c2 cmul sqd cadd c2 cdiv
+    end
+} def
+
+/associate_center_and_curve {
+    10 dict begin
+    /cr exch def
+    /zr exch def
+    /cb exch def
+    /ca exch def
+    /cz2 exch def
+    /cz1 exch def
+
+    /z1a cz1 ca cdivr def
+    /z2a cz2 ca cdivr def
+
+    /d1 z1a zr csub cnorm  1 cr div 1 ca div add abs sub abs def
+    /d2 z2a zr csub cnorm  1 cr div 1 ca div add abs sub abs def
+
+    d1 d2 lt
+    { z1a ca cz2 cb cdivr cb }
+    { z2a ca cz1 cb cdivr cb }
+    ifelse
+    end
+} def
+
+/get_circles {
+    10 dict begin
+    /c3 exch def
+    /z3 exch def
+    /c2 exch def
+    /z2 exch def
+    /c1 exch def
+    /z1 exch def
+
+    c1 c2 c3 solve_real /cb exch def /ca exch def
+
+    z1 c1 cmulr z2 c2 cmulr z3 c3 cmulr solve_complex
+	/cz2 exch def /cz1 exch def
+
+    cz1 cz2 ca cb z1 c1 associate_center_and_curve
+    end
+} def
+
+/out_circle {
+    4 dict begin
+    get_circles /cb exch def /zb exch def /ca exch def /za exch def
+    ca cb lt
+    { za ca }
+    { zb cb }
+    ifelse
+    end
+} def
+
+/in_circle {
+    4 dict begin
+    get_circles /cb exch def /zb exch def /ca exch def /za exch def
+    ca cb gt
+    { za ca }
+    { zb cb }
+    ifelse
+    end
+} def
+
+/on_right {
+    5 dict begin
+    /zb exch def
+    /za exch def
+    /zm exch def
+
+    /ta za zm csub carg def
+    /tb zb zm csub carg def
+
+    /ang tb ta sub cvi 360 mod def
+    ang -180 lt
+    { ang 360 add 0 lt }
+    { ang 0 lt }
+    ifelse
+    end
+} def
+
+/right_circle {
+    4 dict begin
+    get_circles /cb exch def /zb exch def /ca exch def /za exch def
+    za z1 z2 on_right
+    { za ca }
+    { zb cb }
+    ifelse
+    end
+} def
+
+/recurse {
+    9 dict begin
+    /min exch def
+    /c3 exch def /z3 exch def
+    /c2 exch def /z2 exch def
+    /c1 exch def /z1 exch def
+
+    z1 c1 z2 c2 z3 c3
+    c3 0 gt
+    { in_circle }
+    { right_circle }
+    ifelse
+    /c4 exch def /z4 exch def
+
+    1 c4 div min gt
+
+% plus de dictstackoverflow mais stackoverflow !
+    { z4 c4 draw_circle
+      z1 c1 z2 c2 z4 c4 min
+      z4 c4 z2 c2 z3 c3 min
+      z1 c1 z4 c4 z3 c3 min
+      end
+      recurse recurse recurse
+    }
+    { end }
+    ifelse
+} def
+
+/start {
+    9 dict begin
+    /min exch def
+    /c3 exch def /z3 exch def
+    /c2 exch def /z2 exch def
+    /c1 exch def /z1 exch def
+
+    z1 c1 z2 c2 z3 c3 out_circle /ce exch def /ze exch def
+    ce 0 gt
+    { (abandon) }
+    {
+      100 ce neg mul dup scale
+      ze real neg ze imag neg translate
+
+      newpath ze real ze imag 1 ce div 0 360 arc stroke
+      z1 c1 draw_circle
+      z2 c2 draw_circle
+      z3 c3 draw_circle
+      z1 c1 z2 c2 z3 c3 min recurse
+      z1 c1 z3 c3 ze ce min recurse
+      z3 c3 z2 c2 ze ce min recurse
+      z2 c2 z1 c1 ze ce min recurse
+    } ifelse
+    end
+} def
+
+/third_center {
+    9 dict begin
+    /r3 exch def
+    /r2 exch def
+    /r1 exch def
+
+    /ra r1 r3 add def
+    /rb r2 r3 add def
+    /x2 r1 r2 add def
+    /ra2 ra dup mul def
+    /x  x2 dup mul neg ra2 sub rb 2 exp add
+	2 x2 neg mul div def
+    /delta -4 x dup mul ra2 sub mul def
+
+    delta 0 lt
+    { (third_center) }
+    { [ x   delta sqrt 2 div neg ] }
+    ifelse
+    end
+} def
+
+/doit {
+    4 dict begin
+    /min exch def
+    /r3 exch def
+    /r2 exch def
+    /r1 exch def
+
+    [ 0 0 ] 1 r1 div
+    [ r1 r2 add 0 ] 1 r2 div
+    r1 r2 r3 third_center 1 r3 div
+    min
+    start
+    end
+} def
+
+% run it
+
+150 75 50 1 doit

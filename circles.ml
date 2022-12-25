@@ -747,14 +747,14 @@ let to_text fout circles r1 r2 r3 min =
 (*s
 
 Pour les deux premières représentations graphiques, nous utiliserons
-une structure de données graphiques fournie par le module Pictures
-\cite{pictures}. Il permet de manipuler des figures composées d'une
-liste d'objets graphiques élémentaires et fournit des fonctions
-permettant d'afficher directement la figure à l'écran ou de générer un
-fichier postscript encapsulé.  Le seul type d'objets dont nous aurons
-besoin est [Circle(x,y,r)] où [x] et [y] sont les coordonnées du
-centre du cercle et [r] son rayon (tous trois de type [float]).  La
-fonction [make_picture] retourne une valeur de type [pict].
+une structure de données graphiques fournie par le module Pictures. Il
+permet de manipuler des figures composées d'une liste d'objets
+graphiques élémentaires et fournit des fonctions permettant d'afficher
+directement la figure à l'écran ou de générer un fichier postscript
+encapsulé.  Le seul type d'objets dont nous aurons besoin est
+[Circle(x,y,r)] où [x] et [y] sont les coordonnées du centre du cercle
+et [r] son rayon (tous trois de type [float]).  La fonction
+[make_picture] retourne une valeur de type [pict].
 
 *)
 
@@ -945,10 +945,11 @@ let main r1 r2 r3 min =
 
 (*s
 
-Ce programme a également été traduit en PostScript \cite{ZZZ}.
-Les paramètres (tailles des trois cercles de départ et taille
-minimale) sont à éditer directement dans le fichier qui peut être
-ouvert avec un logiciel de visualisation de documents PostScript.
+Ce programme a également été traduit en PostScript (voir fichier
+\texttt{circles.eps}).  Les paramètres (tailles des trois cercles de
+départ et taille minimale) sont à éditer directement dans le fichier
+qui peut être ouvert avec un logiciel de visualisation de documents
+PostScript.
 
 La traduction n'est pas difficile (pour quelqu'un familier avec
 PostScript) mais l'écriture directe aurait été certainement plus
