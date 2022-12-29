@@ -8,7 +8,6 @@
 \usepackage{pst-node}
 \usepackage{amsmath}
 \usepackage{url}
-\newcommand{\bibfieldurl}[1]{ Page web : {\small\url{#1}}.}
 
 \newcommand{\img}[2]{\includegraphics[width=#1]{#2}}
 \newenvironment{figureH}{\begin{figure}[h]}{\end{figure}}
@@ -16,9 +15,10 @@
 \NoAutoSpaceBeforeFDP
 \newcommand{\vect}[1]{\overrightarrow{#1}}
 
+
 \title{Empilements de cercles}
 \author{Christophe Deleuze}
-\date{26 août 2007}
+\date{26 août 2007 (révisé en 2022)}
 \AtBeginDocument{\maketitle\begin{abstract}
 
     La rubrique ``Formes mathématiques'' d'un récent numéro de la
@@ -29,7 +29,7 @@
     figures.
 
     Il a été rédigé dans le style ``programmation littéraire''
-    \emph{(literate programming)}, qui intégre la documentation et le
+    \emph{(literate programming)}, qui intègre la documentation et le
     code source en un seul document.  L'outil utilisé est
     \textsf{Ocamlweb} \cite{ocamlweb}, qui permet de mêler code en
     Caml et documentation en \LaTeX{}.
@@ -61,7 +61,7 @@ courbures (la courbure d'un cercle est définie comme l'inverse de son
 rayon) de quatre cercles deux à deux tangents est égal au double de la
 somme de leurs carrés :
 
-$$ 2(e^2+f^2+g^2+h^2) = (e+f+g+h)^2 $$
+$$  (e+f+g+h)^2 = 2(e^2+f^2+g^2+h^2) $$
 
 Ainsi, si nous connaissons les courbures [e], [f] et [g] de trois
 cercles tangents deux à deux, nous devons résoudre une simple équation
@@ -90,8 +90,9 @@ Une généralisation de cette relation de Descartes s'applique aux
 nombres complexes $c_iz_i$, produits de la courbure $c_i$ et du
 complexe représentant le centre du cercle $z_i$.
 
-$$ 2((c_ez_e)^2+(c_fz_f)^2+(c_gz_g)^2+(c_hz_h)^2) =
-(c_ez_e+c_fz_f+c_gz_g+c_hz_h)^2 $$
+$$ (c_ez_e+c_fz_f+c_gz_g+c_hz_h)^2 =
+   2((c_ez_e)^2+(c_fz_f)^2+(c_gz_g)^2+(c_hz_h)^2) $$
+
 
 En la résolvant de la même façon, on obtient le produit complexe
 courbure fois position du centre pour chacun des deux cercles
@@ -234,7 +235,7 @@ la plus grande.
     \pscircle(0,0){3}      \put(-2,1.5){$C_1$}
     \pscircle(5.5,0){2.5}  \put(6,0){$C_2$}
     \pscircle(3.182,-3.857){2} \put(1.5,-4){$C_3$}
-    \psset{linewidth=0.03mm}
+    \psset{linewidth=0.03mm,linecolor=blue}
     \pscircle(2.497,-0.395){-5.528}\put(7,4){$C_e$}
     \pscircle(3.03,-1.484){0.378} \put(1.2,-1.2){$C_i$}
   \end{pspicture}
@@ -249,9 +250,10 @@ la plus grande.
     \pscircle(0,0){3}\put(-1,1.5){$C_1$}
     \pscircle(2.9,-2){0.5} \put(3.2,-1.5){$C_2$}
     \pscircle(2.4,-4.9){2.5}\put(1,-5){$C_3$}
+    \psset{linecolor=blue}
+    \pscircle(2.25,-2.2){0.22}\put(0.8,-2){$C_i$}
     \psset{linewidth=0.03mm}
     \pscircle(8,0){5}\put(9,3){$C_e$}
-    \pscircle(2.25,-2.2){0.22}\put(0.8,-2){$C_i$}
   \end{pspicture}
   \hfill~
   \caption{Position des solutions si les trois cercles ont une courbure positive}
@@ -426,7 +428,7 @@ cercle ``intérieur''.
 \end{figureh}
 
 
-Ne mais doit-on pas remplir aussi l'espace ``de gauche'' ?  Pas
+Mais ne doit-on pas remplir aussi l'espace ``de gauche'' ?  Pas
 maintenant, remarquez que le cercle de gauche de $C_d$, $C_1$ et $C_3$
 existe déjà, c'est $C_2$, de même que $C_1$ pour $C_2$, $C_d$ et
 $C_3$.
@@ -569,8 +571,6 @@ plaisir de vérifier le détail du calcul effectué par la fonction
 cas où la valeur de [delta] serait négative suite aux erreurs
 d'arrondis nous levons une exception pour le signaler.
 
-%ZZZ failwith ?
-
 *)
 
 let third_center r1 r2 r3 =
@@ -590,8 +590,9 @@ let third_center r1 r2 r3 =
 
 Nous pouvons maintenant, à partir des rayons des trois cercles
 initiaux et du rayon minimal, construire la liste des cercles de
-l'empilement.  Il suffit pour cela de construire les trois
-cercles initiaux puis d'appeler la fonction [start].
+l'empilement.  Il suffit pour cela de construire les trois cercles
+initiaux puis d'appeler la fonction [start]. Nous pouvons ainsi
+construire les cercles à la façon de la figure \ref{fig:exemple}.
 
 *)
 
@@ -679,32 +680,6 @@ let fractal_circles ((ze,ce)::circles) cmax =
   in
   help [] circles
 
-(*i
-let fractal_circles ((ze,ce)::circles) cmax =
-  let smallest = List.fold_left (fun sml (z,c) -> max sml c) 0. circles
-  in
-  let rec help acc candidates =
-    match candidates with
-    | [] -> acc
-    | (z,c)::others -> 
-	if (c/.ce)*.smallest > cmax then
-	  (* this candidate has too big a curve, skip it *)
-	  help acc others
-	else
-	  let newcircles = 
-	    let scl = abs_float (c /. ce) in
-	    List.map
-	      (fun (zi,ci) -> Complex.add (cdiv (Complex.sub zi ze) scl) z, ci*.scl)
-	      circles
-	  in
-	  (* new circles are added to [acc] but are also new [candidates] *)
-          (* to receive a copy of the original figure *)
-	  help (acc @ newcircles) (others @ newcircles)
-  in
-
-  help [] circles
-i*)
-
 (*s
 
 Il nous reste à présenter l'information calculée, c'est à dire
@@ -747,23 +722,23 @@ let to_text fout circles r1 r2 r3 min =
 (*s
 
 Pour les deux premières représentations graphiques, nous utiliserons
-une structure de données graphiques fournie par le module Pictures. Il
-permet de manipuler des figures composées d'une liste d'objets
-graphiques élémentaires et fournit des fonctions permettant d'afficher
-directement la figure à l'écran ou de générer un fichier postscript
-encapsulé.  Le seul type d'objets dont nous aurons besoin est
-[Circle(x,y,r)] où [x] et [y] sont les coordonnées du centre du cercle
-et [r] son rayon (tous trois de type [float]).  La fonction
-[make_picture] retourne une valeur de type [pict].
+une structure de données graphiques fournie par le module auxiliaire
+Picture.\footnote{qui reprend une bonne partie du module
+\texttt{GraphPs} de Pierre Weis.} Il permet de manipuler des figures
+composées d'une liste d'objets graphiques élémentaires et fournit des
+fonctions permettant d'afficher directement la figure à l'écran ou de
+générer un fichier postscript encapsulé.  Le seul type d'objets dont
+nous aurons besoin est [Circle(x,y,r)] où [x] et [y] sont les
+coordonnées du centre du cercle et [r] son rayon (tous trois de type
+[float]).  La fonction [make_picture] retourne une valeur de type
+[pict].
 
 *)
 
 let make_pict circles =
 
   let pict_of_vc ({Complex.re=x;Complex.im=y}, c) =
-    [ Picture.Circle(x,y,abs_float(1./.c)) ](*i;
-      CText(x,y,string_of_int (int_of_float (c*.100.))) ] i*)
-
+    [ Picture.Circle(x,y,abs_float(1./.c)) ]
   in
   Picture.make_picture (List.flatten (List.map pict_of_vc circles))
 ;;
@@ -774,7 +749,7 @@ let make_pict circles =
 Le dessin illustrant l'article \cite{empilements_de_cercles} contient
 dans chaque cercle un nombre représentant sa courbure.  Ce nombre est
 centré et d'une taille remplissant son cercle.  Ceci n'est pas
-possible avec le module Pictures, mais peut facilement être réalisé en
+possible avec le module Picture, mais peut facilement être réalisé en
 PostScript.  Nous générons donc directement du code PostScript
 \cite{postscript:blue} que nous ne commenterons pas ici.  La fonction
 [to_eps] génère le fichier sur la sortie standard. Le résultat est une
@@ -791,12 +766,12 @@ paramètre [sc]. [lw] fixera l'épaisseur des traits.
 \end{figureh}
 
 *)
-let version = 0.96
+let version = 0.97
 
 let to_eps fout (c0::circles) r1 r2 r3 min sc lw =
   Printf.fprintf fout "%%!PS-Adobe-2.0 EPSF-2.0
 %%%%Title: Empilement de cercles r1=%f r2=%f r3=%f min=%f
-%%%%Creator: circles.ml %f\n" 
+%%%%Creator: circles.ml %.2f\n"
     r1 r2 r3 min version;
   let x,y,r = match c0 with ({Complex.re=x;Complex.im=y},c) -> x,y,-1./.c in
   Printf.fprintf fout "%%%%BoundingBox: %f %f %f %f\n" (x-.r) (y-.r) (x+.r) (y+.r);
@@ -865,8 +840,8 @@ initiaux et le rayon minimal) et accepte les options \texttt{-t} pour
 générer la représentation texte, \texttt{-e} pour générer la
 représentation postscript encapsulé et \texttt{-E} pour celle avec les
 nombres dans les cercles. Si aucune de ces trois options n'est donnée,
-l'empilement de cercles sera affiché à l'écran.  La côté de la fenêtre
-peut alors être spécifiée par l'option \texttt{-w}.  Les options
+l'empilement de cercles sera affiché à l'écran.  Le côté de la fenêtre
+peut alors être spécifié par l'option \texttt{-w}.  Les options
 \texttt{-f} et \texttt{-F} sélectionnent les versions fractales.
 Enfin \texttt{-s} et \texttt{-l} fixent, en conjonction avec
 \texttt{-E}, le facteur multiplicateur appliqué à la courbure pour
@@ -961,7 +936,8 @@ programmeur doit alors formuler une solution en terme de concepts qui
 ne sont pas directement fournis par le langage, c'est à dire qu'il a
 un langage pour penser la solution et un langage pour la mettre en \oe
 uvre.  Il est bien plus confortable de pouvoir penser directement une
-solution dans le langage dans lequel elle sera mise en \oe uvre.
+solution dans le langage dans lequel elle sera mise en \oe uvre.  Mais
+c'est une autre histoire...
 
 *)
 

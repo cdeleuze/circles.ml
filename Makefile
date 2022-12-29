@@ -25,7 +25,7 @@ exempleaf.eps: circles
 	./circles -e -f 100 75 50 2 > $@
 
 exemplef.eps: circles
-	./circles -e -F 100 75 50 4 > $@
+	./circles -e -F 100 75 50 3 > $@
 
 exemplenb.eps: circles
 	./circles -E -s 1000 150 75 50 5 > $@
