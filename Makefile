@@ -14,7 +14,7 @@ circles: circles.ml picture.cmo
 %.cmo: %.ml
 	ocamlc $(GDIR) -c -o $@ $<
 
-# pictures included in the litterate program
+# pictures included in the literate program
 
 EXEMPLE_EPS = exemple.eps exempleaf.eps exemplef.eps exemplenb.eps
 
@@ -30,7 +30,7 @@ exemplef.eps: circles
 exemplenb.eps: circles
 	./circles -E -s 1000 150 75 50 5 > $@
 
-# pdf of the litterate program
+# pdf of the literate program
 circles.pdf: circles.tex circles.bbl $(EXEMPLE_EPS)
 	latex circles.tex
 	dvips circles
@@ -51,3 +51,9 @@ circles.tex: circles.ml
 	    -e 's/\/\./\/\\negmedspace.\\:/g'  \
 	    -e 's/<(-\\negthickspace/<(-/g'      \
 	    $@
+
+# epstopdf from texlive
+# convert from imagemagick
+exemple.png: exemplenb.eps
+	rm -f exemplenb.pdf; epstopdf $<
+	convert -alpha remove exemplenb.pdf $@

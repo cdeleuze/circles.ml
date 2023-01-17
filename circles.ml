@@ -766,7 +766,7 @@ paramètre [sc]. [lw] fixera l'épaisseur des traits.
 \end{figureh}
 
 *)
-let version = 0.97
+let version = 0.98
 
 let to_eps fout (c0::circles) r1 r2 r3 min sc lw =
   Printf.fprintf fout "%%!PS-Adobe-2.0 EPSF-2.0
@@ -791,10 +791,8 @@ let to_eps fout (c0::circles) r1 r2 r3 min sc lw =
     newpath 0 0 moveto
     t true charpath flattenpath pathbbox
     2 index sub /height exch def
-    2 index sub /width exch def
-    pop pop
-    
-    % gs BUG? pathbbox gives wrong width for strings with odd numbers of chars
+    pop pop pop
+    % better use stringwidth than pathbbox for width
     t stringwidth pop /width exch def
     
     % draw circle
@@ -810,15 +808,12 @@ let to_eps fout (c0::circles) r1 r2 r3 min sc lw =
     grestore
 } def
 
-
 /c { % x y r c
-
     (mystring) cvs textincircle
-
 } def
 %%EndProlog
 
-/Helvetica-Bold findfont 1 scalefont setfont
+/Helvetica-Bold findfont 10 scalefont setfont
 ";
 
   Printf.fprintf fout "%f setlinewidth\n" lw;

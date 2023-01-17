@@ -15,16 +15,16 @@
     newpath 0 0 moveto
     t true charpath flattenpath pathbbox
     2 index sub /height exch def
-    2 index sub /width exch def
-    pop pop
+    pop pop pop
 
-    % BUG? pathbbox is false for strings with odd numbers of chars
+    % better use stringwidth than pathbbox for width
     t stringwidth pop /width exch def
-        % draw circle
+
+    % draw circle
     x y translate
     newpath 0 0 r 0 360 arc stroke
 
-    % fix text scale
+    % set text scale
     height width atan cos r mul 2 mul width div dup scale
 
     % draw centered text
@@ -34,14 +34,7 @@
 } def
 
 
-/c { % x y r c
-
-    (mystring) cvs textincircle
-
-} def
-
-
-/Helvetica-Bold findfont 1 scalefont setfont
+/Helvetica-Bold findfont 10 scalefont setfont
 
 /draw_circle { % [x y] c 
     2 dict begin
